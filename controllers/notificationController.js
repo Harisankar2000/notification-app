@@ -26,30 +26,33 @@ exports.getNotifications = async (req, res) => {
   try {
     const userId = req.userId; // From JWT middleware
 
-    console.log(userId)
+    console.log("User ID:", userId); 
     const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 items per page
 
     const offset = (page - 1) * limit;
-    console.log("before find")
-    console.log("count",count)
-    const { count, rows: notifications } = await Notification.findAndCountAll({
+
+    const notifications = await Notification.findAndCountAll({
       where: { receiverId: userId },
-      limit: parseInt(limit),
-      offset: parseInt(offset),
+      limit: parseInt(limit, 10),
+      offset: parseInt(offset, 10),
       order: [['createdAt', 'DESC']]
     });
-    console.log("count",count,rows)
+
+    console.log("Count of notifications:", notifications.count); 
+    console.log("Notifications retrieved:", notifications.rows); 
 
     res.json({
-      totalItems: count,
-      totalPages: Math.ceil(count / limit),
+      totalItems: notifications.count,
+      totalPages: Math.ceil(notifications.count / limit),
       currentPage: page,
-      notifications
+      notifications: notifications.rows
     });
   } catch (error) {
+    console.error("Error retrieving notifications:", error);
     res.status(500).json({ error: 'Failed to retrieve notifications' });
   }
 };
+
 
 exports.markAsRead = async (req, res) => {
   try {
