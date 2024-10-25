@@ -1,14 +1,23 @@
 const Notification = require('../models/Notification');
+const User = require('../models/User');
 
 exports.sendNotification = async (req, res) => {
   try {
     const { senderId, receiverId, message } = req.body;
-    console.log("before send notification")
+
+    // Validate sender and receiver
+    const sender = await User.findByPk(senderId);
+    const receiver = await User.findByPk(receiverId);
+    console.log("sender",sender)
+
+    if (!sender || !receiver) {
+      return res.status(404).json({ error: 'Sender or receiver not found' });
+    }
+
     const notification = await Notification.create({ senderId, receiverId, message });
-    console.log("notification",notification);
-    // Emit real-time notification here if receiver is online
     res.status(201).json(notification);
   } catch (error) {
+    console.error('Error sending notification:', error);
     res.status(400).json({ error: 'Failed to send notification' });
   }
 };

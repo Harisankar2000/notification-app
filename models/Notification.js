@@ -1,42 +1,47 @@
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
-const User = require('./User');
 
-// Define the Notification model
-const Notification = sequelize.define('Notification', {
-    notification_id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+class Notification extends Model {}
+
+Notification.init(
+  {
+    notificationId: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      field: 'notification_id' // maps to notification_id in the DB
     },
     senderId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'sender_id' // maps to sender_id in the DB
     },
     receiverId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'receiver_id' // maps to receiver_id in the DB
     },
     message: {
-        type: DataTypes.STRING(255),
-        allowNull: false,
+      type: DataTypes.TEXT,
+      allowNull: false,
     },
     isRead: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      field: 'is_read' // maps to is_read in the DB
     },
-    created_at: {
-        type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
+      field: 'created_at' // maps to created_at in the DB
     }
-}, {
-    tableName: 'notifications',
-    timestamps: false
-});
+  },
+  {
+    sequelize,
+    modelName: 'Notification',
+    tableName: 'notifications', // table name in the DB
+    timestamps: false, 
+  }
+);
 
-// Define associations
-Notification.belongsTo(User, { as: 'Sender', foreignKey: 'senderId' });
-Notification.belongsTo(User, { as: 'Receiver', foreignKey: 'receiverId' });
-
-// Export the Notification model
 module.exports = Notification;
