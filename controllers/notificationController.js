@@ -3,7 +3,9 @@ const Notification = require('../models/Notification');
 exports.sendNotification = async (req, res) => {
   try {
     const { senderId, receiverId, message } = req.body;
+    console.log("before send notification")
     const notification = await Notification.create({ senderId, receiverId, message });
+    console.log("notification",notification);
     // Emit real-time notification here if receiver is online
     res.status(201).json(notification);
   } catch (error) {

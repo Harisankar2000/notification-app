@@ -5,16 +5,19 @@ const User = require('../models/User');
 exports.register = async (req, res) => {
   try {
     const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    console.log("before user")
+
+    // Check if username already exists
     const existingUser = await User.findOne({ where: { username } });
-if (existingUser) {
-  return res.status(400).json({ error: 'Username already taken' });
-}
+    if (existingUser) {
+      return res.status(400).json({ error: 'Username already taken' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await User.create({ username, password: hashedPassword });
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
     console.error("Registration error:", error);
-    res.status(400).json({ error: 'Username already taken' });
+    res.status(400).json({ error: 'An error occurred during registration' });
   }
 };
 
