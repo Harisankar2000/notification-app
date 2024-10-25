@@ -1,8 +1,7 @@
-// server.js
 const app = require('./app');
 const http = require('http');
 const socketIo = require('socket.io');
-const { setupSocket } = require('./sockets/notificationSocket'); // Socket.IO setup function
+const setupSocket = require('./sockets/notificationSocket');
 
 // Create an HTTP server
 const server = http.createServer(app);
