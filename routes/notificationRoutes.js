@@ -13,6 +13,6 @@ router.get('/', auth, notificationController.getNotifications);
 router.put('/:id/read', auth, notificationController.markAsRead);
 
 // Mark all notifications as read (authenticated)
-// router.put('/markAllRead', auth, notificationController.markAllAsRead);
+ router.put('/markAllRead', auth, notificationController.markAllAsRead);
 
 module.exports = router;

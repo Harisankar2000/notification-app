@@ -1,5 +1,4 @@
 const Notification = require('../models/Notification');
-const User = require('../models/User');
 
 exports.sendNotification = async (req, res) => {
   try {
@@ -14,12 +13,23 @@ exports.sendNotification = async (req, res) => {
 
 exports.getNotifications = async (req, res) => {
   try {
-    const userId = req.userId; // Set in auth middleware
-    const notifications = await Notification.findAll({
+    const userId = req.userId; // From JWT middleware
+    const { page = 1, limit = 10 } = req.query; // Default to page 1, 10 items per page
+
+    const offset = (page - 1) * limit;
+    const { count, rows: notifications } = await Notification.findAndCountAll({
       where: { receiverId: userId },
+      limit: parseInt(limit),
+      offset: parseInt(offset),
       order: [['createdAt', 'DESC']]
     });
-    res.json(notifications);
+
+    res.json({
+      totalItems: count,
+      totalPages: Math.ceil(count / limit),
+      currentPage: page,
+      notifications
+    });
   } catch (error) {
     res.status(500).json({ error: 'Failed to retrieve notifications' });
   }
@@ -32,5 +42,18 @@ exports.markAsRead = async (req, res) => {
     res.json({ message: 'Notification marked as read' });
   } catch (error) {
     res.status(400).json({ error: 'Failed to mark notification as read' });
+  }
+};
+
+exports.markAllAsRead = async (req, res) => {
+  try {
+    const userId = req.userId;
+    await Notification.update(
+      { isRead: true },
+      { where: { receiverId: userId, isRead: false } }
+    );
+    res.json({ message: 'All notifications marked as read' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to mark all notifications as read' });
   }
 };

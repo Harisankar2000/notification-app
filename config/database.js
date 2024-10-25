@@ -18,7 +18,6 @@ let sequelize = new Sequelize(
   }
 );
 
-// Test the database connection
 sequelize
   .authenticate()
   .then(() => {

@@ -1,0 +1,17 @@
+# Dockerfile
+FROM node:20
+
+# Create app directory
+WORKDIR /server
+
+# Install app dependencies
+COPY package*.json ./
+
+RUN npm install
+
+# Bundle app source
+COPY . .
+
+# Expose port and start app
+EXPOSE 3000
+CMD ["npm", "start"]
